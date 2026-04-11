@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import DeckCreation from '@/components/decks/DeckCreation.vue'
 import DeckDetail from '@/components/decks/DeckDetail.vue'
+import GamePage from '@/pages/GamePage.vue'
 import HomePage from '@/pages/HomePage.vue'
 import LoginPage from '@/pages/LoginPage.vue'
 import SignupPage from '@/pages/SignupPage.vue'
@@ -46,6 +47,12 @@ const routes = [
     // '/deck-detail'
     path: ROUTES.DECKDETAIL,
     component: DeckDetail,
+    meta: { requiresAuth: true },
+  },
+  {
+    // '/game'
+    path: ROUTES.GAME,
+    component: GamePage,
     meta: { requiresAuth: true },
   },
 ]

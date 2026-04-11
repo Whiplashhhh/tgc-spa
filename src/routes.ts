@@ -5,4 +5,5 @@ export const ROUTES = {
   DECKCREATION: '/deck-creation',
   DECKUPDATE: '/deck-creation/:id',
   DECKDETAIL: '/deck-detail/:id',
+  GAME: '/game',
 } as const
