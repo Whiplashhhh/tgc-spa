@@ -26,21 +26,14 @@
       >
         {{ isEditMode ? 'Modifier le deck' : 'Créer le deck' }}
       </NButton>
+      <NInput v-model:value="searchText" placeholder="Rechercher un pokemon" />
       <CardGrid
         v-model="selectedCount"
-        :liste-pokemons="allCard"
+        :liste-pokemons="filteredCards || allCard"
         :max-selections="10"
         :is-selectable="true"
         size="sm"
       />
-      <NButton
-        v-if="allCard.length > 0"
-        type="primary"
-        :disabled="selectedCount.size !== 10 || !deckName"
-        @click="isEditMode ? updateDeck() : createDeck()"
-      >
-        {{ isEditMode ? 'Modifier le deck' : 'Créer le deck' }}
-      </NButton>
     </div>
   </div>
 </template>
@@ -67,12 +60,32 @@ const deckId = computed(() =>
   route.params.id ? Number(route.params.id) : null,
 )
 
+const searchText = ref('')
+
 onBeforeMount(async () => {
   try {
     allCard.value = await api.getCards()
   } catch (e) {
     message.error(`erreur lors du chargement des cartes : ${e}`)
   }
+})
+
+const filteredCards = computed(() => {
+  const searchLower = searchText.value.toLowerCase()
+
+  // chercher cartes correspondantes à la recherche
+  const matching = allCard.value.filter((card) =>
+    card.name.toLowerCase().includes(searchLower),
+  )
+
+  // ajouter les cartes déjà sélectionnées
+  const selected = allCard.value.filter(
+    (card) =>
+      selectedCount.value.has(card.id) &&
+      !card.name.toLowerCase().includes(searchLower),
+  )
+
+  return [...matching, ...selected]
 })
 
 watch(
