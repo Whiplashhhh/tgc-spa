@@ -115,11 +115,12 @@ const handleClick = () => {
 }
 
 .md {
-  width: 300px;
+  width: calc(100vw / 5 - 40px);
 }
 
 .sm {
-  width: 150px;
+  max-width: 150px;
+  width: calc(100vw / 5 - 80px);
 }
 
 .card {

@@ -4,6 +4,7 @@ import { io } from 'socket.io-client'
 import { useRouter } from 'vue-router'
 
 import { useAuthStore } from '@/store/auth.store.ts'
+import type { PokemonType } from '@/types'
 import type {
   AttackPayload,
   CreateRoomPayload,
@@ -11,6 +12,7 @@ import type {
   GameResult,
   GameSession,
   GameState,
+  JoinRoomPayload,
   PlayCardPayload,
   Room,
 } from '@/types/game.ts'
@@ -94,21 +96,81 @@ export const useGameStore = defineStore('game', {
         reconnectionAttempts: 5,
       })
 
-      //events
-      //lobby
-      this.socket.on('roomsList', this.handleRoomsList)
-      this.socket.on('roomsListUpdate', this.handleRoomsListUpdated)
-      this.socket.on('roomCreated', this.handleRoomCreated)
+      // debug
+      this.socket.on('connect', () => {
+        /*
+        console.log('Socket connecté! ID:', this.socket?.id)
+*/
+      })
 
-      //jeu
-      this.socket.on('gameStarted', this.handleGameStarted)
-      this.socket.on('gameStateUpdated', this.handleGameStateUpdated)
-      this.socket.on('gameEnded', this.handleGameEnded)
-      this.socket.on('opponentDisconnected', this.handleOpponentDisconnected)
+      this.socket.on('disconnect', () => {
+        /*
+        console.log('Socket déconnecté')
+*/
+        this.socket = null
+      })
 
-      //erreurs
-      this.socket.on('error', this.handleError)
-      this.socket.on('disconnect', this.handleDisconnect)
+      /*this.socket.on('connect_error', (error) => {
+        console.error('Erreur de connexion:', error)
+      })*/
+
+      // events
+      // lobby
+      this.socket.on('roomsList', (rooms) => {
+        /*
+        console.log('Rooms reçues:', rooms)
+*/
+        this.handleRoomsList(rooms)
+      })
+
+      this.socket.on('roomsListUpdate', (rooms) => {
+        /*
+        console.log('Rooms mises à jour:', rooms)
+*/
+        this.handleRoomsListUpdated(rooms)
+      })
+
+      this.socket.on('roomCreated', (data) => {
+        /*
+        console.log('Room créée:', data)
+*/
+        this.handleRoomCreated(data)
+      })
+
+      // Jeu
+      this.socket.on('gameStarted', (data) => {
+        /*
+        console.log('Partie démarrée:', data)
+*/
+        this.handleGameStarted(data)
+      })
+
+      this.socket.on('gameStateUpdated', (game) => {
+        /*
+        console.log('État du jeu mis à jour:', game)
+*/
+        this.handleGameStateUpdated(game)
+      })
+
+      this.socket.on('gameEnded', (result) => {
+        /*
+        console.log('Partie terminée:', result)
+*/
+        this.handleGameEnded(result)
+      })
+
+      this.socket.on('opponentDisconnected', (message) => {
+        /*
+        console.error('Adversaire déconnecté:', message)
+*/
+        this.handleOpponentDisconnected(message)
+      })
+
+      // erreurs
+      this.socket.on('error', (errorMessage) => {
+        /*console.error('Erreur socket:', errorMessage)*/
+        this.handleError(errorMessage)
+      })
     },
 
     /**
@@ -143,7 +205,7 @@ export const useGameStore = defineStore('game', {
     /**
      * Rejoindre une room
      */
-    joinRoom(payload: CreateRoomPayload) {
+    joinRoom(payload: JoinRoomPayload) {
       if (!this.socket) return
       this.loading = true
       this.deckId = payload.deckId
@@ -242,6 +304,112 @@ export const useGameStore = defineStore('game', {
       this.game = null
       this.playerRole = null
       this.error = null
+      this.loading = false
+    },
+
+    /**
+     * mock d'une partie
+     */
+    mockGame() {
+      const mockCards = [
+        {
+          id: 1,
+          name: 'Pikachu',
+          hp: 60,
+          attack: 40,
+          type: 'Electric' as PokemonType,
+          pokedexNumber: 25,
+          imgUrl:
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png',
+        },
+        {
+          id: 2,
+          name: 'Raichu',
+          hp: 80,
+          attack: 60,
+          type: 'Electric' as PokemonType,
+          pokedexNumber: 26,
+          imgUrl:
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/26.png',
+        },
+        {
+          id: 3,
+          name: 'Charizard',
+          hp: 120,
+          attack: 100,
+          type: 'Fire' as PokemonType,
+          pokedexNumber: 6,
+          imgUrl:
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png',
+        },
+        {
+          id: 4,
+          name: 'Venusaur',
+          hp: 100,
+          attack: 80,
+          type: 'Grass' as PokemonType,
+          pokedexNumber: 3,
+          imgUrl:
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/3.png',
+        },
+        {
+          id: 5,
+          name: 'Blastoise',
+          hp: 100,
+          attack: 85,
+          type: 'Water' as PokemonType,
+          pokedexNumber: 9,
+          imgUrl:
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/9.png',
+        },
+        {
+          id: 6,
+          name: 'Mewtwo',
+          hp: 150,
+          attack: 120,
+          type: 'Psychic' as PokemonType,
+          pokedexNumber: 150,
+          imgUrl:
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png',
+        },
+      ]
+
+      const mockAuthStore = useAuthStore()
+      const currentUserId = mockAuthStore.user?.id || 1
+      const currentUsername = mockAuthStore.user?.username || 'Vous'
+      const opponentId = 2
+      const opponentUsername = 'Adversaire'
+
+      this.game = {
+        id: 'mock-game-1',
+        roomId: 'mock-room-1',
+        currentPlayerTurn: currentUserId,
+        players: [
+          {
+            playerId: currentUserId,
+            username: currentUsername,
+            hp: 100,
+            maxHp: 100,
+            hand: [mockCards[0], mockCards[1], mockCards[2]],
+            bench: [mockCards[3], mockCards[4]],
+            active: mockCards[5],
+            discard: [],
+          },
+          {
+            playerId: opponentId,
+            username: opponentUsername,
+            hp: 80,
+            maxHp: 100,
+            hand: [mockCards[1], mockCards[2]],
+            bench: [mockCards[0]],
+            active: mockCards[3],
+            discard: [mockCards[4]],
+          },
+        ],
+        result: null,
+      }
+      this.roomId = 'mock-room-1'
+      this.playerRole = 'host'
       this.loading = false
     },
   },

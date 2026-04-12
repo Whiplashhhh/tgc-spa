@@ -1,7 +1,7 @@
 <template>
   <div class="player-zone">
     <div class="zone-header">
-      <NH3>{{ label }}</NH3>
+      <NH3>{{ board?.username }}</NH3>
       <div class="score">{{ board?.playerId ? 0 : 0 }}/3 KO</div>
     </div>
 
@@ -9,7 +9,7 @@
       <div v-if="board?.active" class="pokemon-card">
         <PokemonCard
           :card="board.active"
-          size="md"
+          size="sm"
           :current-hp="board.active.hp"
           :is-selectable="false"
         />
@@ -20,9 +20,7 @@
     </div>
 
     <div v-if="isCurrentPlayer" class="player-hand">
-      <p class="hand-label">Main ({{ board?.hand.length || 0 }}/5)</p>
       <PlayerHand :board="board" />
-      <p class="deck-label">Deck : {{ 10 }} cartes restantes</p>
     </div>
   </div>
 </template>
@@ -45,6 +43,7 @@ defineProps<{
   border-radius: 8px;
   display: flex;
   flex-direction: column;
+  background-color: #e1e1e1;
 }
 
 .zone-header {
@@ -55,6 +54,8 @@ defineProps<{
 
 .active-pokemon {
   text-align: center;
+  display: flex;
+  justify-content: center;
   padding-bottom: 25px;
 }
 </style>

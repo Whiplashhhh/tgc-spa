@@ -59,20 +59,13 @@
         :board="gameStore.currentPlayerBoard"
         :is-current-player="true"
       />
-      <!-- Main du joueur -->
-      <!--      <PlayerHand :board="gameStore.currentPlayerBoard" />-->
     </div>
   </div>
-
-  <!-- Modal de fin de partie -->
-  <!--  <GameEndModal />-->
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted } from 'vue'
 
-/*import GameEndModal from '@/components/game/GameEndModal.vue'*/
-/*import PlayerHand from '@/components/game/PlayerHand.vue'*/
 import PlayerZone from '@/components/game/PlayerZone.vue'
 import { useGameStore } from '@/store/game.store'
 
@@ -101,6 +94,11 @@ onMounted(() => {
   if (!gameStore.socket) {
     gameStore.initializeSocket()
   }
+
+  // mock pour tester
+  if (!gameStore.game) {
+    gameStore.mockGame()
+  }
 })
 
 onUnmounted(() => {
@@ -116,7 +114,6 @@ onUnmounted(() => {
   height: 85vh;
   gap: 16px;
   padding: 16px;
-  background-color: #f5f5f5;
 }
 
 .actions-bar {

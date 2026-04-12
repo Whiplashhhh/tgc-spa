@@ -5,22 +5,14 @@
       <p class="hand-label">Main ({{ board?.hand.length || 0 }}/5)</p>
     </div>
 
-    <!-- Cartes de la main (réutilise CardGrid) -->
+    <!-- Cartes de la main -->
     <div v-if="board?.hand && board.hand.length > 0" class="hand-cards">
       <CardGrid
         :liste-pokemons="board.hand"
-        size="sm"
+        size="md"
         :is-selectable="false"
         @click-card="playCard"
       />
-      <div
-        v-for="card in board.hand"
-        :key="card.id"
-        :class="['card-wrapper', { clickable: canPlayCard() }]"
-        @click="playCard(card.id)"
-      >
-        <PokemonCard :card="card" size="sm" :is-selectable="false" />
-      </div>
     </div>
     <div v-else class="no-cards">
       <NEmpty description="Main vide" />
@@ -28,7 +20,7 @@
 
     <!-- Label Deck -->
     <div class="deck-info">
-      <p class="deck-label">Deck ({{ deckRemaining() }} cartes restantes)</p>
+      <p class="deck-label">Pioche ({{ deckRemaining() }} cartes restantes)</p>
     </div>
   </div>
 </template>
@@ -57,7 +49,7 @@ const playCard = (cardId: number) => {
 }
 
 const deckRemaining = () => {
-  const totalCards = 10 // Deck standard = 10 cartes
+  const totalCards = 10
   const inHand = gameStore.currentPlayerBoard?.hand.length || 0
   const inActive = gameStore.currentPlayerBoard?.active ? 1 : 0
   const inBench = gameStore.currentPlayerBoard?.bench.length || 0
@@ -72,12 +64,13 @@ const deckRemaining = () => {
   flex-direction: column;
   gap: 12px;
   padding: 12px;
-  background-color: #f9f9f9;
+  background-color: #bababa;
   border-top: 1px solid #ddd;
+  border-radius: 8px;
 }
 
 .hand-header {
-  padding: 0 8px;
+  padding-left: 8px;
 }
 
 .hand-label {
@@ -90,24 +83,7 @@ const deckRemaining = () => {
 .hand-cards {
   display: flex;
   gap: 8px;
-  overflow-x: auto;
   padding: 8px 0;
-}
-
-.card-wrapper {
-  display: flex;
-  align-items: center;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.card-wrapper.clickable {
-  cursor: pointer;
-  opacity: 1;
-}
-
-.card-wrapper.clickable:hover {
-  transform: translateY(-4px);
 }
 
 .no-cards {
@@ -123,6 +99,6 @@ const deckRemaining = () => {
 .deck-label {
   margin: 0;
   font-size: 12px;
-  color: #999;
+  color: #555555;
 }
 </style>

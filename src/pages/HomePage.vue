@@ -35,6 +35,7 @@ const deckCreation = () => {
 .top {
   display: flex;
   gap: 20px;
+  max-height: 40vh;
 }
 .deck {
   display: flex;

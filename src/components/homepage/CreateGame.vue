@@ -21,6 +21,7 @@
 <script setup lang="ts">
 import { useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 import { useApi } from '@/composables/useApi'
 import { useGameStore } from '@/store/game.store'
@@ -29,6 +30,7 @@ import type { Deck } from '@/types'
 const message = useMessage()
 const api = useApi()
 const gameStore = useGameStore()
+const router = useRouter()
 
 const decks = ref<Deck[]>([])
 const selectedDeckId = ref<number | null>(null)
@@ -51,8 +53,9 @@ const createGame = () => {
     return
   }
   gameStore.deckId = selectedDeckId.value
-  // Puis appeler l'action du store pour créer la room
   gameStore.createRoom({ deckId: selectedDeckId.value })
+  selectedDeckId.value = null
+  router.push('/game')
 }
 </script>
 
